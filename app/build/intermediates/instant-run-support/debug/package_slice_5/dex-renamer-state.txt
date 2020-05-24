@@ -1,0 +1,4 @@
+#Thu May 21 21:01:25 CST 2020
+base.0=E\:\\Android\\work\\NotePad-master\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\5\\slice_5
+renamed.0=classes.dex
+file.0=E\:\\Android\\work\\NotePad-master\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\5\\slice_5\\classes.dex
