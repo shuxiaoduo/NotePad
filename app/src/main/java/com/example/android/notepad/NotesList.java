@@ -60,7 +60,7 @@ public class NotesList extends ListActivity {
     private static final String[] PROJECTION = new String[] {
             NotePad.Notes._ID, // 0
             NotePad.Notes.COLUMN_NAME_TITLE, // 1
-            NotePad.Notes.COLUMN_NAME_CREATE_DATE
+            NotePad.Notes.COLUMN_NAME_CREATE_DATE//添加时间戳
     };
 
     /** The index of the title column */
@@ -121,7 +121,7 @@ public class NotesList extends ListActivity {
         String[] dataColumns = { NotePad.Notes.COLUMN_NAME_TITLE } ;
         // The view IDs that will display the cursor columns, initialized to the TextView in
         // noteslist_item.xml
-        int[] viewIDs = { android.R.id.text1,R.id.text2 };
+        int[] viewIDs = { android.R.id.text1,R.id.text2 };//添加时间戳的布局位置
 
         // Creates the backing adapter for the ListView.
         SimpleCursorAdapter adapter
@@ -282,10 +282,8 @@ public class NotesList extends ListActivity {
             case R.id.menu_search:
                 Intent intent = new Intent(this,NoteSearch.class);
                 startActivity(intent);
+                return true;
 
-
-
-                
         default:
             return super.onOptionsItemSelected(item);
         }

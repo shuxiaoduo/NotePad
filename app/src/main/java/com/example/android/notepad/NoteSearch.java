@@ -26,13 +26,11 @@ public class NoteSearch extends Activity{
             NotePad.Notes.COLUMN_NAME_TITLE, // 1
             NotePad.Notes.COLUMN_NAME_CREATE_DATE
     };
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置全屏显示
         super.setContentView(R.layout.note_search);
         Intent intent = getIntent();
 
@@ -41,18 +39,18 @@ public class NoteSearch extends Activity{
         if (intent.getData() == null) {
             intent.setData(NotePad.Notes.CONTENT_URI);
         }
-        final ListView listview= (ListView) findViewById(R.id.listview);
+        final ListView listview= (ListView) findViewById(R.id.listview);//获取listview
         NotePadProvider.DatabaseHelper dh=new NotePadProvider.DatabaseHelper(this);
-        final SQLiteDatabase db=dh.getReadableDatabase();
-        SearchView search= (SearchView) findViewById(R.id.search);
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        final SQLiteDatabase db=dh.getReadableDatabase();//对数据库进行操作
+        SearchView search= (SearchView) findViewById(R.id.search);//获取搜索视图
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {//添加监听事件
             @Override
             public boolean onQueryTextSubmit(String s) {
                 return false;
             }
 
             @Override
-            public boolean onQueryTextChange(String s) {
+            public boolean onQueryTextChange(String s) {//实现模糊查询，通过标题或者内容进行查询
                 Cursor cursor=db.query(
                         NotePad.Notes.TABLE_NAME,
                         PROJECTION,
@@ -62,7 +60,6 @@ public class NoteSearch extends Activity{
                         null,
                         NotePad.Notes.DEFAULT_SORT_ORDER);
                 int[] viewIDs = { R.id.text3,R.id.text4};
-
                 // Creates the backing adapter for the ListView.
                 SimpleCursorAdapter adapter
                         = new SimpleCursorAdapter(
@@ -80,28 +77,22 @@ public class NoteSearch extends Activity{
         });
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {//对listview的item添加监听事件，可以点击进入查看对应的便签内容
                 // Constructs a new URI from the incoming URI and the row ID
                 Uri uri = ContentUris.withAppendedId(getIntent().getData(), l);
-
                 // Gets the action from the incoming Intent
                 String action = getIntent().getAction();
-
                 // Handles requests for note data
                 if (Intent.ACTION_PICK.equals(action) || Intent.ACTION_GET_CONTENT.equals(action)) {
-
                     // Sets the result to return to the component that called this Activity. The
                     // result contains the new URI
                     setResult(RESULT_OK, new Intent().setData(uri));
                 } else {
-
                     // Sends out an Intent to start an Activity that can handle ACTION_EDIT. The
                     // Intent's data is the note ID URI. The effect is to call NoteEdit.
                     startActivity(new Intent(Intent.ACTION_EDIT, uri));
                 }
             }
         });
-
-
     }
 }
