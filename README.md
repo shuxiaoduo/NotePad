@@ -14,6 +14,7 @@ This is an AndroidStudio rebuild of google SDK sample NotePad
 ~~~
 
 #### 2.添加时间戳布局
+在viewid中添加时间戳布局的id
 ~~~
   int[] viewIDs = { android.R.id.text1,R.id.text2 };//添加时间戳的布局位置
 
@@ -52,6 +53,29 @@ This is an AndroidStudio rebuild of google SDK sample NotePad
     />
 </LinearLayout>
 ~~~
+对于获取现在时间的处理，我把create_date改成了text类型
+~~~
+ @Override
+       public void onCreate(SQLiteDatabase db) {
+           db.execSQL("CREATE TABLE " + NotePad.Notes.TABLE_NAME + " ("
+                   + NotePad.Notes._ID + " INTEGER PRIMARY KEY,"
+                   + NotePad.Notes.COLUMN_NAME_TITLE + " TEXT,"
+                   + NotePad.Notes.COLUMN_NAME_NOTE + " TEXT,"
+                   + NotePad.Notes.COLUMN_NAME_CREATE_DATE + " TEXT,"
+                   + NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE + " TEXT"
+                   + ");");
+       }
+~~~
+然后对时间进行处理添加到数据库中
+~~~
+  SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");// HH:mm:ss//获取当前时间
+         Date date = new Date(System.currentTimeMillis());
+         String now=simpleDateFormat.format(date);//存储字符串类型的时间
+        // If the values map doesn't contain the creation date, sets the value to the current time.
+        if (values.containsKey(NotePad.Notes.COLUMN_NAME_CREATE_DATE) == false) {
+            values.put(NotePad.Notes.COLUMN_NAME_CREATE_DATE, now);
+        }
+ ~~~
 ## 二、添加笔记查询功能
 #### 1.点击查询菜单出现搜索框
 ![image](https://github.com/shuxiaoduo/NotePad/blob/master/image/time.png)
@@ -92,6 +116,8 @@ This is an AndroidStudio rebuild of google SDK sample NotePad
                 return true;
 ~~~
 #### 3.新建NoteSearch.class实现搜索功能
+搜索功能支持实时搜索和模糊查询，并且可以在搜索结果当中点击进入对应的便签。<br>
+使用searchView实现，为searchView添加监听事件。详细实现过程请看代码中注释。
 ~~~
 package com.example.android.notepad;
 
@@ -131,18 +157,18 @@ public class NoteSearch extends Activity{
 
             @Override
             public boolean onQueryTextChange(String s) {//实现模糊查询，通过标题或者内容进行查询
-                Cursor cursor=db.query(
+                Cursor cursor=db.query(//数据库查询
                         NotePad.Notes.TABLE_NAME,
                         PROJECTION,
-                        NotePad.Notes.COLUMN_NAME_TITLE+" like ? or "+NotePad.Notes.COLUMN_NAME_NOTE+" like ?",
-                        new String[]{"%"+s+"%","%"+s+"%"},
+                        NotePad.Notes.COLUMN_NAME_TITLE+" like ? or "+NotePad.Notes.COLUMN_NAME_NOTE+" like ?",//查询条件
+                        new String[]{"%"+s+"%","%"+s+"%"},//查询语句对应的问号中的内容
                         null,
                         null,
                         NotePad.Notes.DEFAULT_SORT_ORDER);
                 int[] viewIDs = { R.id.text3,R.id.text4};
                 // Creates the backing adapter for the ListView.
                 SimpleCursorAdapter adapter
-                        = new SimpleCursorAdapter(
+                        = new SimpleCursorAdapter(//把查询结果放入adapter中
                         NoteSearch.this,                             // The Context for the ListView
                         R.layout.notesearch_listview,          // Points to the XML for a list item
                         cursor,                           // The cursor to get items from
@@ -151,7 +177,7 @@ public class NoteSearch extends Activity{
                 );
 
                 // Sets the ListView's adapter to be the cursor adapter that was just created.
-                listview.setAdapter(adapter);
+                listview.setAdapter(adapter);//listview用于显示查询的结果实现实时搜索
                 return true;
             }
         });
@@ -185,12 +211,14 @@ public class NoteSearch extends Activity{
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <SearchView
+    <!--searchView搜索框-->
+    <SearchView   
         android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:iconifiedByDefault="false"
         android:queryHint="搜索"></SearchView>
+    <!--listview用于存放搜索结果的列表视图-->
     <ListView
         android:id="@+id/listview"
         android:layout_width="match_parent"
